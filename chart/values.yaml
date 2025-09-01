@@ -1,0 +1,112 @@
+# Default values for amazon-clone.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: your-docker-username/amazon-clone
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# MySQL configuration
+mysql:
+  enabled: true
+  auth:
+    rootPassword: "rootpassword"
+    database: "amazon_clone"
+    username: "user"
+    password: "password"
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# Nginx Ingress Controller
+nginx:
+  enabled: true
+  controller:
+    service:
+      type: LoadBalancer
+    metrics:
+      enabled: true
+
+# Prometheus configuration
+prometheus:
+  enabled: true
+  alertmanager:
+    enabled: false
+  server:
+    persistentVolume:
+      enabled: true
+      size: 8Gi
+
+# Grafana configuration
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: admin
+  persistence:
+    enabled: true
+    size: 1Gi
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'amazon-clone'
+        orgId: 1
+        folder: 'Amazon Clone'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/amazon-clone
+  dashboards:
+    amazon-clone:
+      amazon-clone-dashboard:
+        gnetId: 1
+        revision: 1
+        datasource: Prometheus
