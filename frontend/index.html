@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Clone - Shop Everything You Need</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amazon: {
+                            blue: '#146EB4',
+                            orange: '#FF9900',
+                            dark: '#131921',
+                            light: '#232F3E'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-amazon-dark text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <!-- Top nav -->
+            <div class="flex items-center justify-between py-2">
+                <!-- Logo -->
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold cursor-pointer text-amazon-orange" onclick="window.location.href='index.html'">
+                        amazon
+                    </h1>
+                    <div class="hidden md:flex items-center space-x-2 text-sm">
+                        <span class="text-gray-300">Deliver to</span>
+                        <div class="font-bold">New York 10001</div>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-3xl mx-4">
+                    <div class="flex">
+                        <select id="categorySelect" class="bg-gray-200 text-black px-3 py-2 rounded-l border-r border-gray-400 text-sm">
+                            <option value="">All</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Home & Garden">Home & Garden</option>
+                            <option value="Sports & Outdoors">Sports & Outdoors</option>
+                            <option value="Books">Books</option>
+                            <option value="Beauty">Beauty</option>
+                        </select>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Search Amazon Clone" 
+                            class="flex-1 px-4 py-2 text-black focus:outline-none"
+                        >
+                        <button 
+                            id="searchBtn" 
+                            class="bg-amazon-orange px-6 py-2 rounded-r hover:bg-yellow-500 transition duration-200"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right nav -->
+                <div class="flex items-center space-x-6">
+                    <!-- Language -->
+                    <div class="hidden md:flex items-center space-x-1 cursor-pointer hover:text-amazon-orange">
+                        <span class="text-sm">🇺🇸</span>
+                        <span class="text-sm">EN</span>
+                    </div>
+
+                    <!-- Account -->
+                    <div class="cursor-pointer hover:text-amazon-orange" onclick="toggleAuthModal()">
+                        <div class="text-xs">Hello, Sign in</div>
+                        <div class="font-bold text-sm">Account & Lists</div>
+                    </div>
+
+                    <!-- Orders -->
+                    <div class="cursor-pointer hover:text-amazon-orange" onclick="window.location.href='orders.html'">
+                        <div class="text-xs">Returns</div>
+                        <div class="font-bold text-sm">& Orders</div>
+                    </div>
+
+                    <!-- Cart -->
+                    <div class="flex items-center cursor-pointer hover:text-amazon-orange" onclick="window.location.href='cart.html'">
+                        <div class="relative">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4 0L3 3M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+                            </svg>
+                            <span id="cartCount" class="absolute -top-2 -right-2 bg-amazon-orange text-xs rounded-full px-2 py-1 font-bold">0</span>
+                        </div>
+                        <span class="ml-2 font-bold">Cart</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom nav -->
+            <div class="bg-amazon-light py-2">
+                <div class="flex items-center space-x-6 text-sm">
+                    <div class="cursor-pointer hover:text-amazon-orange">All</div>
+                    <div class="cursor-pointer hover:text-amazon-orange">Today's Deals</div>
+                    <div class="cursor-pointer hover:text-amazon-orange">Customer Service</div>
+                    <div class="cursor-pointer hover:text-amazon-orange">Registry</div>
+                    <div class="cursor-pointer hover:text-amazon-orange">Gift Cards</div>
+                    <div class="cursor-pointer hover:text-amazon-orange">Sell</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative">
+        <div class="bg-gradient-to-r from-amazon-blue to-amazon-dark text-white py-20">
+            <div class="container mx-auto px-4 text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-4">Welcome to Amazon Clone</h2>
+                <p class="text-xl mb-8">Discover millions of products with fast, reliable delivery</p>
+                <button class="bg-amazon-orange text-black px-8 py-3 rounded-lg font-bold text-lg hover:bg-yellow-500 transition duration-200">
+                    Shop Now
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Categories -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-8 text-center">Shop by Category</h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <div class="category-card cursor-pointer" onclick="filterByCategory('Electronics')">
+                    <div class="bg-gray-100 rounded-lg p-6 text-center hover:shadow-lg transition duration-200">
+                        <div class="text-4xl mb-3">📱</div>
+                        <h4 class="font-semibold">Electronics</h4>
+                    </div>
+                </div>
+                <div class="category-card cursor-pointer" onclick="filterByCategory('Fashion')">
+                    <div class="bg-gray-100 rounded-lg p-6 text-center hover:shadow-lg transition duration-200">
+                        <div class="text-4xl mb-3">👕</div>
+                        <h4 class="font-semibold">Fashion</h4>
+                    </div>
+                </div>
+                <div class="category-card cursor-pointer" onclick="filterByCategory('Home & Garden')">
+                    <div class="bg-gray-100 rounded-lg p-6 text-center hover:shadow-lg transition duration-200">
+                        <div class="text-4xl mb-3">🏠</div>
+                        <h4 class="font-semibold">Home & Garden</h4>
+                    </div>
+                </div>
+                <div class="category-card cursor-pointer" onclick="filterByCategory('Sports & Outdoors')">
+                    <div class="bg-gray-100 rounded-lg p-6 text-center hover:shadow-lg transition duration-200">
+                        <div class="text-4xl mb-3">⚽</div>
+                        <h4 class="font-semibold">Sports</h4>
+                    </div>
+                </div>
+                <div class="category-card cursor-pointer" onclick="filterByCategory('Books')">
+                    <div class="bg-gray-100 rounded-lg p-6 text-center hover:shadow-lg transition duration-200">
+                        <div class="text-4xl mb-3">📚</div>
+                        <h4 class="font-semibold">Books</h4>
+                    </div>
+                </div>
+                <div class="category-card cursor-pointer" onclick="filterByCategory('Beauty')">
+                    <div class="bg-gray-100 rounded-lg p-6 text-center hover:shadow-lg transition duration-200">
+                        <div class="text-4xl mb-3">💄</div>
+                        <h4 class="font-semibold">Beauty</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters and Sorting -->
+    <section class="py-6 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-4">
+                    <select id="sortSelect" class="px-4 py-2 border rounded-lg bg-white">
+                        <option value="">Sort by</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                        <option value="name_asc">Name: A to Z</option>
+                        <option value="name_desc">Name: Z to A</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="minPrice" placeholder="Min Price" class="px-3 py-2 border rounded-lg w-24 bg-white">
+                        <span>-</span>
+                        <input type="number" id="maxPrice" placeholder="Max Price" class="px-3 py-2 border rounded-lg w-24 bg-white">
+                        <button onclick="applyFilters()" class="px-4 py-2 bg-amazon-blue text-white rounded-lg hover:bg-blue-700">Filter</button>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-600">
+                    <span id="productCount">Loading products...</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="py-12">
+        <div class="container mx-auto px-4">
+            <h3 class="text-2xl font-bold mb-8">Featured Products</h3>
+            <div id="loadingSpinner" class="text-center py-12">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amazon-blue"></div>
+                <p class="mt-2 text-gray-600">Loading products...</p>
+            </div>
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 hidden">
+                <!-- Products will be loaded here -->
+            </div>
+            <div id="noProducts" class="text-center py-12 hidden">
+                <p class="text-gray-600 text-lg">No products found matching your criteria.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login/Register Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Sign In</h3>
+                    <button onclick="toggleAuthModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <form id="authForm">
+                    <div id="nameField" class="mb-4 hidden">
+                        <label class="block text-sm font-medium mb-2">Full Name</label>
+                        <input type="text" id="name" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amazon-blue">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Email</label>
+                        <input type="email" id="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amazon-blue">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">Password</label>
+                        <input type="password" id="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amazon-blue">
+                    </div>
+                    <div id="confirmPasswordField" class="mb-4 hidden">
+                        <label class="block text-sm font-medium mb-2">Confirm Password</label>
+                        <input type="password" id="password_confirmation" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amazon-blue">
+                    </div>
+                    <button type="submit" id="authSubmitBtn" class="w-full bg-amazon-orange text-black font-bold py-3 rounded-lg hover:bg-yellow-500 transition duration-200">
+                        Sign In
+                    </button>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <p class="text-sm text-gray-600">
+                        <span id="authToggleText">Don't have an account?</span>
+                        <button id="authToggleBtn" onclick="toggleAuthMode()" class="text-amazon-blue hover:underline font-medium">
+                            Sign Up
+                        </button>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-amazon-dark text-white mt-12">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h4 class="font-bold mb-4">Get to Know Us</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-amazon-orange">Careers</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Blog</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">About Amazon Clone</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Investor Relations</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Make Money with Us</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-amazon-orange">Sell products</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Sell apps</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Become an Affiliate</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Advertise Your Products</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Amazon Payment Products</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-amazon-orange">Amazon Business Card</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Shop with Points</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Reload Your Balance</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Amazon Currency Converter</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Let Us Help You</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-amazon-orange">Amazon and COVID-19</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Your Account</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Your Orders</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Shipping Rates & Policies</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Returns & Replacements</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Manage Your Content and Devices</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Amazon Assistant</a></li>
+                        <li><a href="#" class="hover:text-amazon-orange">Help</a></li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-8 border-gray-600">
+            <div class="text-center">
+                <h2 class="text-2xl font-bold text-amazon-orange mb-4">amazon clone</h2>
+                <p class="text-sm text-gray-400">© 2025 Amazon Clone. All rights reserved. | Built with ❤️ for learning purposes</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span id="notificationText">Product added to cart!</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

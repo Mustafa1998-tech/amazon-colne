@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - Amazon Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amazon: {
+                            blue: '#146EB4',
+                            orange: '#FF9900',
+                            dark: '#131921',
+                            light: '#232F3E'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation (simplified for product page) -->
+    <nav class="bg-amazon-dark text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold cursor-pointer text-amazon-orange" onclick="window.location.href='index.html'">
+                    amazon
+                </h1>
+                <div class="flex items-center space-x-6">
+                    <div class="cursor-pointer hover:text-amazon-orange" onclick="window.location.href='orders.html'">
+                        <span class="text-sm">Orders</span>
+                    </div>
+                    <div class="flex items-center cursor-pointer hover:text-amazon-orange" onclick="window.location.href='cart.html'">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m-2.4 0L3 3M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+                        </svg>
+                        <span id="cartCount" class="ml-1 bg-amazon-orange text-xs rounded-full px-2 py-1 font-bold">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white py-3 border-b">
+        <div class="container mx-auto px-4">
+            <nav class="text-sm text-gray-600">
+                <a href="index.html" class="hover:text-amazon-blue">Home</a>
+                <span class="mx-2">></span>
+                <span id="breadcrumbCategory">Loading...</span>
+                <span class="mx-2">></span>
+                <span id="breadcrumbProduct" class="text-gray-800 font-medium">Product Details</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Product Detail Section -->
+    <div class="container mx-auto px-4 py-8">
+        <div id="loadingSpinner" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amazon-blue"></div>
+            <p class="mt-2 text-gray-600">Loading product details...</p>
+        </div>
+
+        <div id="productDetail" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Product Images -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-lg p-4 border">
+                        <img id="mainImage" src="" alt="Product Image" class="w-full h-96 object-contain rounded-lg">
+                    </div>
+                    <div id="thumbnailContainer" class="flex space-x-2 overflow-x-auto">
+                        <!-- Thumbnail images will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div class="space-y-6">
+                    <div>
+                        <h1 id="productName" class="text-3xl font-bold text-gray-900 mb-2"></h1>
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="flex items-center">
+                                <span class="text-yellow-500">★★★★☆</span>
+                                <span class="text-sm text-gray-600 ml-2">(4.2 out of 5)</span>
+                            </div>
+                            <span class="text-sm text-gray-500">|</span>
+                            <span class="text-sm text-amazon-blue cursor-pointer hover:underline">1,234 reviews</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t pt-6">
+                        <div class="mb-4">
+                            <span class="text-3xl font-bold text-red-600" id="productPrice"></span>
+                            <span class="text-sm text-gray-500 ml-2">FREE delivery</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <span class="text-green-600 font-medium" id="stockStatus"></span>
+                        </div>
+
+                        <div class="mb-6">
+                            <h3 class="font-semibold mb-2">Description:</h3>
+                            <p id="productDescription" class="text-gray-700 leading-relaxed"></p>
+                        </div>
+
+                        <!-- Quantity and Actions -->
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <label class="font-medium">Quantity:</label>
+                                <select id="quantitySelect" class="px-3 py-2 border rounded-lg bg-white">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+
+                            <div class="space-y-3">
+                                <button id="addToCartBtn" class="w-full bg-amazon-orange text-black font-bold py-3 px-6 rounded-lg hover:bg-yellow-500 transition duration-200">
+                                    Add to Cart
+                                </button>
+                                <button id="buyNowBtn" class="w-full bg-orange-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-orange-700 transition duration-200">
+                                    Buy Now
+                                </button>
+                                <button id="addToWishlistBtn" class="w-full bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-lg hover:bg-gray-300 transition duration-200">
+                                    Add to Wishlist
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Product Features -->
+                        <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                            <h3 class="font-semibold mb-3">Product Features:</h3>
+                            <ul class="space-y-2 text-sm text-gray-700">
+                                <li class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Free delivery on orders over $25
+                                </li>
+                                <li class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    30-day return policy
+                                </li>
+                                <li class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Secure payment processing
+                                </li>
+                                <li class="flex items-center">
+                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Customer support available 24/7
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Products -->
+            <div class="mt-16">
+                <h2 class="text-2xl font-bold mb-8">Customers who viewed this item also viewed</h2>
+                <div id="relatedProducts" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                    <!-- Related products will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Customer Reviews Section -->
+            <div class="mt-16 bg-white rounded-lg p-6 border">
+                <h2 class="text-2xl font-bold mb-6">Customer Reviews</h2>
+                
+                <!-- Review Summary -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center mb-4">
+                            <span class="text-4xl font-bold mr-4">4.2</span>
+                            <div>
+                                <div class="flex items-center text-yellow-500 text-xl mb-1">
+                                    ★★★★☆
+                                </div>
+                                <p class="text-sm text-gray-600">Based on 1,234 reviews</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center">
+                            <span class="text-sm w-8">5★</span>
+                            <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 60%"></div>
+                            </div>
+                            <span class="text-sm text-gray-600">60%</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-sm w-8">4★</span>
+                            <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 25%"></div>
+                            </div>
+                            <span class="text-sm text-gray-600">25%</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-sm w-8">3★</span>
+                            <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 10%"></div>
+                            </div>
+                            <span class="text-sm text-gray-600">10%</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-sm w-8">2★</span>
+                            <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 3%"></div>
+                            </div>
+                            <span class="text-sm text-gray-600">3%</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-sm w-8">1★</span>
+                            <div class="flex-1 mx-3 bg-gray-200 rounded-full h-2">
+                                <div class="bg-yellow-500 h-2 rounded-full" style="width: 2%"></div>
+                            </div>
+                            <span class="text-sm text-gray-600">2%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sample Reviews -->
+                <div class="space-y-6 border-t pt-6">
+                    <div class="border-b pb-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-amazon-blue rounded-full flex items-center justify-center text-white font-bold">
+                                J
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="font-medium">John D.</span>
+                                    <span class="text-yellow-500">★★★★★</span>
+                                    <span class="text-sm text-gray-500">Verified Purchase</span>
+                                </div>
+                                <h4 class="font-medium mb-2">Excellent quality and fast delivery!</h4>
+                                <p class="text-gray-700 text-sm">This product exceeded my expectations. The quality is outstanding and it arrived much faster than expected. Highly recommended!</p>
+                                <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500">
+                                    <span>Helpful?</span>
+                                    <button class="text-amazon-blue hover:underline">Yes (23)</button>
+                                    <button class="text-amazon-blue hover:underline">No (2)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-b pb-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                                S
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <span class="font-medium">Sarah M.</span>
+                                    <span class="text-yellow-500">★★★★☆</span>
+                                    <span class="text-sm text-gray-500">Verified Purchase</span>
+                                </div>
+                                <h4 class="font-medium mb-2">Good value for money</h4>
+                                <p class="text-gray-700 text-sm">Overall satisfied with the purchase. The product works as described and the price is reasonable. Would buy again.</p>
+                                <div class="flex items-center space-x-4 mt-3 text-sm text-gray-500">
+                                    <span>Helpful?</span>
+                                    <button class="text-amazon-blue hover:underline">Yes (15)</button>
+                                    <button class="text-amazon-blue hover:underline">No (1)</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span id="notificationText">Product added to cart!</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize product detail page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProductDetail();
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Wishlist - Amazon Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amazon: {
+                            blue: '#146EB4',
+                            orange: '#FF9900',
+                            dark: '#131921',
+                            light: '#232F3E'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-amazon-dark text-white sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-bold cursor-pointer text-amazon-orange" onclick="window.location.href='index.html'">
+                    amazon
+                </h1>
+                <div class="flex items-center space-x-6">
+                    <div class="cursor-pointer hover:text-amazon-orange" onclick="window.location.href='cart.html'">
+                        <span class="text-sm">Cart</span>
+                        <span id="cartCount" class="bg-amazon-orange text-black text-xs rounded-full px-2 py-1 ml-1">0</span>
+                    </div>
+                    <div class="cursor-pointer hover:text-amazon-orange" onclick="window.location.href='orders.html'">
+                        <span class="text-sm">Orders</span>
+                    </div>
+                    <div id="authButton" class="cursor-pointer hover:text-amazon-orange" onclick="openAuthModal()">
+                        <span class="text-sm">Sign In</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Breadcrumb -->
+    <div class="bg-white py-3 border-b">
+        <div class="container mx-auto px-4">
+            <nav class="text-sm text-gray-600">
+                <a href="index.html" class="hover:text-amazon-blue">Home</a>
+                <span class="mx-2">></span>
+                <span class="text-gray-800 font-medium">Your Wishlist</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Wishlist Content -->
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold mb-4">Your Wishlist</h1>
+            <p class="text-gray-600">Keep track of products you want to buy later</p>
+        </div>
+
+        <div id="loadingSpinner" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-amazon-blue"></div>
+            <p class="mt-2 text-gray-600">Loading your wishlist...</p>
+        </div>
+
+        <div id="emptyWishlist" class="text-center py-12 hidden">
+            <div class="text-6xl mb-4">💝</div>
+            <h2 class="text-xl font-semibold mb-2">Your wishlist is empty</h2>
+            <p class="text-gray-600 mb-6">Browse our products and add items you love to your wishlist.</p>
+            <button onclick="window.location.href='index.html'" class="bg-amazon-orange text-black font-bold py-3 px-6 rounded-lg hover:bg-yellow-500 transition duration-200">
+                Start Shopping
+            </button>
+        </div>
+
+        <div id="wishlistContainer" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-semibold">Your Items</h2>
+                    <p class="text-gray-600"><span id="wishlistCount">0</span> items in your wishlist</p>
+                </div>
+                <button onclick="clearWishlist()" class="text-red-600 hover:text-red-800 font-medium">
+                    Clear All
+                </button>
+            </div>
+
+            <div id="wishlistItems" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Wishlist items will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-lg p-6 w-full max-w-md">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">Sign In Required</h3>
+                    <button onclick="closeAuthModal()" class="text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div id="authContent">
+                    <div id="loginForm">
+                        <form onsubmit="handleLogin(event)">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                                <input type="email" id="loginEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amazon-blue">
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                                <input type="password" id="loginPassword" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amazon-blue">
+                            </div>
+                            <button type="submit" class="w-full bg-amazon-orange text-black font-bold py-3 rounded-lg hover:bg-yellow-500 transition duration-200">
+                                Sign In
+                            </button>
+                        </form>
+                        <p class="text-center mt-4 text-sm text-gray-600">
+                            Don't have an account? 
+                            <button onclick="showRegisterForm()" class="text-amazon-blue hover:underline">Create one</button>
+                        </p>
+                    </div>
+
+                    <div id="registerForm" class="hidden">
+                        <form onsubmit="handleRegister(event)">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                                <input type="text" id="registerName" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amazon-blue">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                                <input type="email" id="registerEmail" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amazon-blue">
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Password</label>
+                                <input type="password" id="registerPassword" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amazon-blue">
+                            </div>
+                            <button type="submit" class="w-full bg-amazon-blue text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition duration-200">
+                                Create Account
+                            </button>
+                        </form>
+                        <p class="text-center mt-4 text-sm text-gray-600">
+                            Already have an account? 
+                            <button onclick="showLoginForm()" class="text-amazon-blue hover:underline">Sign in</button>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="fixed top-4 right-4 z-50 hidden">
+        <div id="notificationContent" class="bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg">
+            <div class="flex items-center">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span id="notificationText">Success!</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Initialize wishlist page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAuth();
+            loadWishlistPage();
+        });
+
+        function clearWishlist() {
+            if (confirm('Are you sure you want to remove all items from your wishlist?')) {
+                clearUserWishlist();
+                showNotification('Wishlist cleared successfully', 'success');
+                loadWishlistPage();
+            }
+        }
+
+        function removeFromWishlistPage(productId) {
+            removeFromWishlist(productId);
+            showNotification('Item removed from wishlist', 'success');
+            loadWishlistPage();
+        }
+
+        function addToCartFromWishlist(productId) {
+            // Find the product in wishlist
+            const wishlist = getWishlist();
+            const product = wishlist.find(p => p.id === productId);
+            
+            if (product) {
+                addToCart(product);
+                showNotification('Item added to cart', 'success');
+                updateCartCount();
+            }
+        }
+
+        function moveAllToCart() {
+            const wishlist = getWishlist();
+            if (wishlist.length === 0) {
+                showNotification('Your wishlist is empty', 'warning');
+                return;
+            }
+
+            wishlist.forEach(product => {
+                addToCart(product);
+            });
+
+            clearUserWishlist();
+            showNotification(`${wishlist.length} items moved to cart`, 'success');
+            updateCartCount();
+            loadWishlistPage();
+        }
+    </script>
+</body>
+</html>

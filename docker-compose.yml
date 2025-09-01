@@ -1,0 +1,86 @@
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: amazon-db
+    environment:
+      MYSQL_DATABASE: amazon_clone
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - amazon-network
+
+  # Backend (Laravel)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: amazon-backend
+    restart: unless-stopped
+    volumes:
+      - ./backend:/var/www
+      - /var/www/vendor
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=amazon_clone
+      - DB_USERNAME=user
+      - DB_PASSWORD=password
+    depends_on:
+      - db
+    networks:
+      - amazon-network
+
+  # Frontend (Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: amazon-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - backend
+    networks:
+      - amazon-network
+
+  # n8n Workflow Automation
+  n8n:
+    image: n8nio/n8n
+    container_name: amazon-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - DB_TYPE=mysql
+      - DB_MYSQLDB_DATABASE=amazon_clone
+      - DB_MYSQLDB_HOST=db
+      - DB_MYSQLDB_USER=user
+      - DB_MYSQLDB_PASSWORD=password
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - db
+    networks:
+      - amazon-network
+
+networks:
+  amazon-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  n8n_data:
